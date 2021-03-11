@@ -1,0 +1,42 @@
+.ZeroPadding
+{
+	border: 1px solid red;
+	padding: 1px;
+}
+.RightFloat
+{
+	float:right;
+	display:block;
+	border: 1px solid green;
+}
+.RightAlignText
+{
+	text-align: right;
+}
+.Inline
+{
+	display:inline;
+}
+.FloatLeft
+{
+	display:block;
+	float: left;
+}
+.buildFailedBackground
+{
+	background-position: 10px center;
+	background-image: url(/images/logo.png);
+	background-repeat: no-repeat;
+}
+.ListSpacer
+{
+	padding-top: 5px;
+	padding-bottom: 5px;
+	display: block;
+}
+.ClearBoth
+{
+	/*clear: both;
+	float: left;*/
+	display: block;
+}
