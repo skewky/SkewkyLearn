@@ -1,8 +1,9 @@
 {
-  "name": "BentleyWebOptimization",
+  "name": "BentleyWebsiteOptimization",
   "description": "ShowBentleyWebsiteforme",
   "version": "1.0",
   "manifest_version": 2,
+  "web_accessible_resources": ["js/buildMonitor.js"],
   "permissions": [
     "tabs",
     "storage",
@@ -18,16 +19,22 @@
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "images/logo.png",
-      "32": "images/logo.png",
-      "48": "images/logo.png",
-      "128": "images/logo.png"
+      "16": "images/skewkyBentleyWeb.png",
+      "32": "images/skewkyBentleyWeb.png",
+      "48": "images/skewkyBentleyWeb.png",
+      "128": "images/skewkyBentleyWeb.png"
     }
+  },
+  "icons": {
+    "16": "images/skewkyBentleyWeb.png",
+    "32": "images/skewkyBentleyWeb.png",
+    "48": "images/skewkyBentleyWeb.png",
+    "128": "images/skewkyBentleyWeb.png"
   },
   "content_scripts": [
     {
       "matches": ["http://prgsrv.bentley.com/Build.Schedule.Monitor.aspx"],
-      "js": ["myscript.js"],
+      "js": ["js/buildMonitor.js"],
       "run_at":"document_start"
     }
     ]
