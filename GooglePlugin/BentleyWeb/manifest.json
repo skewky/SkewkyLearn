@@ -1,25 +1,63 @@
 {
   "name": "BentleyWebsiteOptimization",
   "description": "Show Optimizated BentleyWebsite For Me",
-  "version": "1.0",
+  "version": "1.1",
   "manifest_version": 2,
+  "homepage_url": "https://www.skewky.com",
+  "omnibox": {
+    "keyword": "be"
+  },
+  "devtools_page": "/html/devtools.html",
   "web_accessible_resources": [
     "/css/*.css",
-    "/js/*.js"],
+    "/js/*.js"
+  ],
   "permissions": [
     "tabs",
     "storage",
-    "declarativeContent"
+    "declarativeContent",
+    "contextMenus",
+    "notifications"
   ],
+  "commands": {
+    "_execute_Page_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+F",
+        "mac": "MacCtrl+Shift+F"
+      },
+      "description": "Opens hello.html"
+    }
+  },
   "options_page": "/html/options.html",
+  "options_ui": {
+    "page": "/html/options.html",
+    // 添加一些默认的样式，推荐使用
+    "chrome_style": true
+  },
   "background": {
+    //can be script or page
+    //"page":"/html/a.html"
     "scripts": [
       "/js/background.js"
     ],
     "persistent": false
   },
+  //toolbar icon one of (browser_action,page_action,app)
+  /* "browser_action": 
+	{
+		"default_icon": {
+      "16": "/images/skewkyBentleyWeb.png",
+      "32": "/images/skewkyBentleyWeb.png",
+      "48": "/images/skewkyBentleyWeb.png",
+      "128": "/images/skewkyBentleyWeb.png"
+    },
+		// 图标悬停时的标题，可选
+		"default_title": "这是一个示例Chrome插件",
+		"default_popup": "/html/menu.html"
+	},*/
   "page_action": {
     "default_popup": "/html/popup.html",
+    "default_title": "BentleyWebsite",
     "default_icon": {
       "16": "/images/skewkyBentleyWeb.png",
       "32": "/images/skewkyBentleyWeb.png",
@@ -33,16 +71,31 @@
     "48": "/images/skewkyBentleyWeb.png",
     "128": "/images/skewkyBentleyWeb.png"
   },
+  /* "chrome_url_overrides":
+  {
+    // only one of them
+    //"newtab": "newtab.html",
+    //"history": "history.html",
+    //"bookmarks": "bookmarks.html"
+  }*/
   "content_scripts": [
     {
-      "matches": ["http://prgsrv.bentley.com/Build.Schedule.Monitor.aspx"],
-      "js": ["/js/buildMonitor.js"],
-      "run_at":"document_start"
+      "matches": [
+        "http://prgsrv.bentley.com/Build.Schedule.Monitor.aspx"
+      ],
+      "js": [
+        "/js/buildMonitor.js"
+      ],
+      "run_at": "document_start"
     },
     {
-      "matches": ["http://prgsrv.bentley.com/Build.Schedule.aspx"],
-      "js": ["/js/buildSchedule.js"],
-      "run_at":"document_start"
+      "matches": [
+        "http://prgsrv.bentley.com/Build.Schedule.aspx"
+      ],
+      "js": [
+        "/js/buildSchedule.js"
+      ],
+      "run_at": "document_start"
     }
-    ]
+  ]
 }
