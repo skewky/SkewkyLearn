@@ -1,9 +1,11 @@
 {
   "name": "BentleyWebsiteOptimization",
-  "description": "ShowBentleyWebsiteforme",
+  "description": "Show Optimizated BentleyWebsite For Me",
   "version": "1.0",
   "manifest_version": 2,
-  "web_accessible_resources": ["js/buildMonitor.js"],
+  "web_accessible_resources": [
+    "css/BentleyWebsiteCommon.css",
+    "js/*.js"],
   "permissions": [
     "tabs",
     "storage",
@@ -35,6 +37,11 @@
     {
       "matches": ["http://prgsrv.bentley.com/Build.Schedule.Monitor.aspx"],
       "js": ["js/buildMonitor.js"],
+      "run_at":"document_start"
+    },
+    {
+      "matches": ["http://prgsrv.bentley.com/Build.Schedule.aspx"],
+      "js": ["js/buildSchedule.js"],
       "run_at":"document_start"
     }
     ]

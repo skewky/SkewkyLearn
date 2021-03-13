@@ -1,0 +1,31 @@
+.BwcBgColor{
+	background-color:#d2ddeb
+}
+
+.BwcListtable {
+    font-size:10px;
+    color:#333333;
+    width:99%;
+    border-width: 1px;
+    border-color:#d2ddeb;
+    border-collapse: collapse;
+    margin-left:1em;
+    margin-right:1em;
+}
+.BwcListtable th {
+    background-color:#b8cae2;
+}
+.BwcListtable tr:nth-child(odd) {
+    background-color:#DBE6E1;
+}
+.BwcListtable tr:nth-child(even) {
+    background-color:#F3F3F3;
+}
+.BwcListtable tr:nth-child(odd):hover  {
+    background-color:#ebc7c7;
+}
+.BwcListtable tr:nth-child(even):hover  {
+    background-color:#ebc7c7;
+}
+
+

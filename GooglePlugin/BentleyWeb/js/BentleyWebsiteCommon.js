@@ -1,26 +1,5 @@
-// binder "run_at": "document_start" in manifest
-document.addEventListener('DOMContentLoaded', fireContentLoadedEvent, false);
 
-function fireContentLoadedEvent() {
-
-	injectCustomJs("js/buildMonitor.js")
-	injectCustomCSS("css/BentleyWebsiteCommon.css")
-
-	initBuildMonitor()
-}
-//#region Base functions
-function injectCustomJs(jsPath) {
-	jsPath = jsPath || 'js/inject.js';
-	var temp = document.createElement('script');
-	temp.setAttribute('type', 'text/javascript');
-	// get url like：chrome-extension://ihcokhadfjfchaeagdoclpnjdiokfakg/js/inject.js
-	temp.src = chrome.extension.getURL(jsPath);
-	temp.onload = function () {
-		// remove after load.
-		//temp.parentNode.removeChild(temp);
-	};
-	document.head.appendChild(temp);
-}
+// #region Base Common Functions
 function injectCustomCSS(cssPath)
 {
 	cssPath = cssPath || 'css/BentleyWebsiteCommon.css';
@@ -33,60 +12,53 @@ function injectCustomCSS(cssPath)
 	document.head.appendChild(temp);
 }
 
-function isStrMatchSearchKeyWords(str, keyword) {
-	if (keyword == "")
-		return true;
-	var keyarr = keyword.split(" ");
-	//console.log(str+" --isStrMatchSearchKeyWords--------------"+ keyword+"------------keyarr.length----  "+ keyarr.length);
-	for (var i = 0; i < keyarr.length; i++) {
-		var keywordInStr = isAnyKeyWordsInStr(str, keyarr[i]);
-		//console.log(str+" --isStrMatchSearchKeyWords---------keyarr.lenght-----"+ keyarr.length+"--"+ keyarr[i]+"--result-"+ keywordInStr);
-		if (keywordInStr == false) {
-			return false;
-		}
-	}
-	//console.log(str+" --isStrMatchSearchKeyWords----Match----------"+ keyword);	
-	return true;
+function createHeadTablesDiv() {
+	var FilterDiv = getOrCreateMyDiv("cimHeadTableDiv");
+	var divInerString = "<table class='PRGFormText'>"	//main table start
+	divInerString += "<tr><td>"		//blank space TR start
+    divInerString += "<div><p /> </div>  "
+    divInerString += "</td></tr>"	//blank space TR end
+
+    divInerString += "<tr><td>"
+    divInerString += "<div id='cimFilterDiv'>Search</div>"    
+	divInerString += "</td></tr>"	//filter TR end
+
+	divInerString += "<tr><td>"		//list TR start
+    divInerString += "<div id='cimListDiv'>list</div>"
+    divInerString += "</td></tr>"	//list TR end
+
+	divInerString += "<tr><td class='CenteredBlock'>"		//Contact TR start
+    divInerString += "Any questions please contact <a href='mailto:bin.zhou@bentley.com?subject=BentleyWebsiteOptimize&body=Hello'>Bin.Zhou</a>"
+    divInerString += "</td></tr>"	//Contact TR end
+
+	divInerString += "<tr><td>"		//blank space TR start
+    divInerString += "<div><p /> </div>  "
+    divInerString += "</td></tr>"	//blank space TR end
+
+	divInerString += "</table>"		//main table end
+	
+	FilterDiv.innerHTML = divInerString;
 }
-function isAnyKeyWordsInStr(str, keyword) {
-	if (keyword == "") {
-		//console.log(str+"==isAnyKeyWordsInStr-------nullkeyworkd=="+keyword);			
-		return true;
-	}
-	keyword = keyword.replaceAll(",", "|");
-	keyword = keyword.replaceAll(";", "|");
-	var keyarr = keyword.split("|");
-	for (var i = 0; i < keyarr.length; i++) {
-		var reg = new RegExp(keyarr[i], 'i');
-		var regRest = str.match(reg);
-		var index = str.indexOf(keyarr[i]);
-		//console.log(str+"====isAnyKeyWordsInStr=----length=="+keyarr.length+"   keyarr[i]="+keyarr[i]+" regRes="+regRest+" index="+index);
-		if (regRest || index > -1) {
-			return true;
-		}
-	}
-	//console.log(str + "==isAnyKeyWordsInStr-------Not=====" + keyword);
-	return false;
-}
-function getOrCreateMyDiv(id, beforeID) {
-	beforeID = beforeID || "frmMain"
+
+
+function getOrCreateMyDiv(id,beforeID) {
+    beforeID = beforeID||"frmMain"
 	var myDiv = document.getElementById(id);
-	if (myDiv) { return myDiv; }
-
-	//create if not exist
-	myDiv = document.createElement("Div");
+	if (myDiv) {
+		console.log("==FoundMyDiv=====" + myDiv.innerHTML);
+		return myDiv;
+	}
+	var myDiv = document.createElement("Div");
 	myDiv.id = id
-
 	var newContent = document.createTextNode("Hi there and greetings!");
 	myDiv.appendChild(newContent);
 
-	var currentDiv = document.getElementById("frmMain");
-	//console.log(document.body.childElementCount+"first"+document.body.childNodes.length+"Child=="+document.body.firstChild.innerHTML)
-	if (currentDiv)
-		document.body.insertBefore(myDiv, currentDiv);
-	else
-		document.body.appendChild(myDiv, document.body.firstChild)
+	var currentDiv = document.getElementById(beforeID);
+	console.log("==CreateMyDiv=====" + myDiv.innerHTML);
+	document.body.insertBefore(myDiv, currentDiv);
+
 	return myDiv;
+
 }
 
 function getClassObj(className, tag) {
@@ -109,63 +81,70 @@ function getClassObj(className, tag) {
 	return findarr;
 }
 
-function getFilterValue(filterNameId) {
-	var myInput = document.getElementById(filterNameId);
-	if (myInput) return myInput.value
-	else return ""
+function isStrMatchSearchKeyWords(str, keyword) {
+	if (keyword == "")
+		return true;
+	var keyarr = keyword.split(" ");
+	//console.log(str+" --isStrMatchSearchKeyWords--------------"+ keyword+"------------keyarr.length----  "+ keyarr.length);
+	for (var i = 0; i < keyarr.length; i++) {
+		var keywordInStr = isAnyKeyWordsInStr(str, keyarr[i]);
+		//console.log(str+" --isStrMatchSearchKeyWords---------keyarr.lenght-----"+ keyarr.length+"--"+ keyarr[i]+"--result-"+ keywordInStr);
+		if (keywordInStr == false) {
+			return false;
+		}
+	}
+	//console.log(str+" --isStrMatchSearchKeyWords----Match----------"+ keyword);	
+	return true;
 }
-//#endregion
-
-//#region BuildMonitor
-
-function initBuildMonitor() {
-	createHeaderTopDiv()
-	redrawListTable();
-
+function isAnyKeyWordsInStr(str, keyword) {
+	if (keyword == "") {
+		//console.log(str+"==isAnyKeyWordsInStr-------nullkeyworkd=="+keyword);			
+		return true;
+	}
+	keyword = keyword.replaceAll(",","|");
+	keyword = keyword.replaceAll(";","|");
+	var keyarr = keyword.split("|");
+	for (var i = 0; i < keyarr.length; i++) {
+		var reg = new RegExp(keyarr[i], 'i');
+		var regRest = str.match(reg);
+		var index = str.indexOf(keyarr[i]);
+		//console.log(str+"====isAnyKeyWordsInStr=----length=="+keyarr.length+"   keyarr[i]="+keyarr[i]+" regRes="+regRest+" index="+index);
+		if (regRest || index > -1) {
+			return true;
+		}
+	}
+	//console.log(str + "==isAnyKeyWordsInStr-------Not=====" + keyword);
+	return false;
 }
+// #endregion
 
-function createHeaderTopDiv() {
-	var FilterDiv = getOrCreateMyDiv("cimfilterDiv");
-	var divInerString = "<table class='PRGFormText BwcBgColor'>"	//main table start
-	divInerString += "<tr><td>"		//blank space TR start
-	divInerString += "<div><p />&nbsp</div>  "
-	divInerString += "</td></tr>"	//blank space TR end
-
-	divInerString += "<tr class='BwcBgColor'><td>Search: "     //filter TR start
-	divInerString += "<input type='text' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodVersion' id='prodVersion' value='' placeholder='Version' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl' placeholder='Stamp' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodStats' id='prodStats' value='' placeholder='Stats' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodStartTime' id='prodStartTime' value='' placeholder='StartTime' onkeyup='redrawListTable()'>"
-	divInerString += "</td></tr>"	//filter TR end
-
-	divInerString += "<tr><td class='CenteredBlock'>"		//list TR start
-	divInerString += "<div id='cimListDiv'>list</div>"
-	divInerString += "</td></tr>"	//list TR end
-
-	divInerString += "<tr><td class='CenteredBlock'>"		//Contact TR start
-	divInerString += "Any questions please contact <a href='mailto:bin.zhou@bentley.com?subject=BentleyWebsiteOptimize&body=Hello'>Bin.Zhou</a>"
-	divInerString += "</td></tr>"	//Contact TR end
-
-	divInerString += "<tr><td>"		//blank space TR start
-	divInerString += "<div><p />&nbsp</div>  "
-	divInerString += "</td></tr>"	//blank space TR end
-
-	divInerString += "</table>"		//main table end
-
-
-	FilterDiv.innerHTML = divInerString;
+// #region Monitor Functions
+function initMonitor()
+{
+    createHeadTablesDiv()
+    createFilterTable()
+    reDrawList() 
 }
-
-function redrawListTable() {
+function createFilterTable()
+{
+    var myDiv = getOrCreateMyDiv("cimFilterDiv");
+    var divInerString = "Search: "     //filter TR start
+    divInerString += "<input type='text' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawTable()'>"
+	divInerString += "<input type='text' name='prodVersion' id='prodVersion' value='' placeholder='Version' onkeyup='redrawTable()'>"
+	divInerString += "<input type='text' name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl' placeholder='Stamp' onkeyup='redrawTable()'>"
+	divInerString += "<input type='text' name='prodStats' id='prodStats' value='' placeholder='Stats' onkeyup='redrawTable()'>"
+	divInerString += "<input type='text' name='prodStartTime' id='prodStartTime' value='' placeholder='StartTime' onkeyup='redrawTable()'>"
+	myDiv.innerHTML = divInerString;
+}
+function reDrawList() {
 	console.log("Call redrawTable=");
 	var listDiv = getOrCreateMyDiv("cimListDiv");
 	var prodInfos = getAllProductStats();
-	searchProdInfos = getFilterProdinfos(prodInfos)
-	var divInerString = "<table name=cimlistTable class='BwcListtable PRGFormText'>"
+	searchProdInfos = getFilterProdinfos()
+	var divInerString = "<table style='border:0px solid #ccc' bgcolor='DBE5F1'>"
 	for (var i = -1; i < searchProdInfos.length; i++) {
 		var prodInfo = {
-			name: "Bentley Product Name " + "(" + searchProdInfos.length + "/" + prodInfos.length + ")",
+			name: "Bentley Product Name "+ "("+searchProdInfos.length+"/"+prodInfos.length+")",
 			version: "Build Version",
 			stamp: "Checkout Stamp",
 			time: "LocalTime",
@@ -173,52 +152,53 @@ function redrawListTable() {
 			log: "LogFiles",
 			action: "Actions",
 		};
-		var isTh = true;
-		if (searchProdInfos.length == 0) {
-			prodInfo.version = ""
-			prodInfo.stamp = ""
-			prodInfo.time = "<font color='red' size=+1>No items were found! Please change your search keyword.</font>"
-			prodInfo.stat = ""
-			prodInfo.log = ""
-			prodInfo.action = ""
+		if( searchProdInfos.length ==0)
+		{
+			prodInfo.version=""
+			prodInfo.stamp=""
+			prodInfo.time="<font color='red' size=+1>No items were found! Please change your search keyword.</font>"
+			prodInfo.stat=""
+			prodInfo.log=""
+			prodInfo.action=""
 		}
-		var index = "(" + searchProdInfos.length + ")"
-		if (i > -1) {
+		var bgcolor = "DBE5F1"
+		var index = "("+searchProdInfos.length+")"
+		if(i>-1)
+		{
+			bgcolor = i % 2 == 0 ? "DBE6E1" : "F3F3F3"
 			prodInfo = searchProdInfos[i];
-			index = i + 1
-			isTh = false
+			index = i+1
 		}
-		divInerString += getProdInforStr(prodInfo, index, isTh);
+		divInerString += getProdInforStr(prodInfo,index, bgcolor);
 	}
-
+	
 	divInerString += "</table>"
 
 	listDiv.innerHTML = divInerString;
 }
 
-
-function getProdInforStr(prodInfo, index, isTh) {
-	console.log(isTh)
-	isTh = isTh||false
-	console.log(isTh)
-	var sTag = isTh?"<th class='BlackControlLabelZeroPad BlueText PRGFormText'>":"<td>";
-	var namesTag = isTh?sTag:"<td class='BlackControlLabelZeroPad BlueText PRGFormText'>" 
-	var eTag = isTh?"</th>":"</td>";
-	var str = "<tr>";
-	str += sTag + index + eTag;
-	str += namesTag + prodInfo.name + eTag;
-	str += sTag + prodInfo.version + eTag;
-	str += sTag + prodInfo.stamp + eTag;
-	str += sTag + prodInfo.stat + eTag;
-	str += sTag + prodInfo.time + eTag;
-	str += sTag + prodInfo.log + eTag;
-	str += sTag+ prodInfo.action + eTag;
-	str += "</th>";
+function getProdInforStr(prodInfo, index, bgcolor) {
+	var str = "<tr class='PRGFormText' bgcolor='" + bgcolor + "'>"
+	str += "<Td class='PRGFormText' >" + index + "</td>";
+	str += "<Td class='BlackControlLabelZeroPad BlueText PRGFormText'>" + prodInfo.name + "</td>";
+	str += "<Td class='PRGFormText' >" + prodInfo.version + "</td>";
+	str += "<Td class='PRGFormText'>" + prodInfo.stamp + "</td>";
+	str += "<Td>" + prodInfo.stat + "</td>";
+	str += "<Td>" + prodInfo.time + "</td>";
+	str += "<Td>" + prodInfo.log + "</td>";
+	str += "<Td>" + prodInfo.action + "</td>";
+	str += "</tr>";
 	return str
 }
 
-
-function getFilterProdinfos(prodInfos) {
+function getFilterValue(filterNameID) {
+	var myInput = document.getElementById(filterNameID);
+	if (myInput) 
+		return myInput.value
+	else
+		return ""
+}
+function getFilterProdinfos() {
 	var searchProdinfos = []
 	console.log("AllProducts-length=" + prodInfos.length);
 	for (var i = 0; i < prodInfos.length; i++) {
@@ -231,8 +211,8 @@ function getFilterProdinfos(prodInfos) {
 		var StatsFilter = getFilterValue("prodStats")
 		//console.log(" nameFilter="+nameFilter+" versionFilter="+versionFilter+" stampFilter="+stampFilter+" timeFilter="+timeFilter+" StatsFilter="+StatsFilter);
 		if (isStrMatchSearchKeyWords(prodInfo.name, nameFilter) &&
-			isStrMatchSearchKeyWords(prodInfo.version, versionFilter) &&
-			isStrMatchSearchKeyWords(prodInfo.stamp, stampFilter) &&
+			isStrMatchSearchKeyWords(prodInfo.version,  versionFilter) &&
+			isStrMatchSearchKeyWords(prodInfo.stamp,  stampFilter) &&
 			isStrMatchSearchKeyWords(prodInfo.time, timeFilter) &&
 			isStrMatchSearchKeyWords(prodInfo.stat, StatsFilter)) {
 			searchProdinfos.push(prodInfo);
@@ -249,7 +229,6 @@ function getFilterProdinfos(prodInfos) {
 	//console.log("searchProdinfos-length：" + searchProdinfos.length);
 	return searchProdinfos;
 }
-
 
 function getAllProductStats() {
 	var prodList = []
@@ -312,9 +291,9 @@ function getProductStats(prodDiv) {
 	prodInfo.action = prodInfo.action.replace("Restart Build", "Restart");
 
 	var logText = "  "
-	if (prodInfo.log.length > 6)
-		logText = prodInfo.log.substr(prodInfo.log.length - 6)
-	prodInfo.log = "<a href='\\\\builds.bentley.com\\prgbuilds\\" + prodInfo.log + "'>" + logText + "</a>";
+	if (prodInfo.log.length>6)
+		logText = prodInfo.log.substr(prodInfo.log.length-6)
+	prodInfo.log = "<a href='\\\\builds.bentley.com\\prgbuilds\\" + prodInfo.log + "'>"+logText+"</a>";
 
 	var msg = " name=" + prodInfo.name +
 		"\t version=" + prodInfo.version +
@@ -327,4 +306,13 @@ function getProductStats(prodDiv) {
 	return prodInfo;
 }
 
+
+//#endregion
+
+//#region Build Schedule
+
+function initBuildSchedule()
+{
+    createHeadTablesDiv()
+}
 //#endregion

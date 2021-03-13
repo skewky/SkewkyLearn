@@ -40,3 +40,7 @@
 	float: left;*/
 	display: block;
 }
+
+tr hover {
+	background-color:#ffffff;
+}
