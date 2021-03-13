@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', fireContentLoadedEvent, false);
 
 function fireContentLoadedEvent() {
 
-	injectCustomJs("js/buildMonitor.js")
-	injectCustomCSS("css/BentleyWebsiteCommon.css")
+	injectCustomJs("/js/buildMonitor.js")
+	injectCustomCSS("/css/BentleyWebsiteCommon.css")
 
 	initBuildMonitor()
 }
 //#region Base functions
 function injectCustomJs(jsPath) {
-	jsPath = jsPath || 'js/inject.js';
+	jsPath = jsPath || '/js/inject.js';
 	var temp = document.createElement('script');
 	temp.setAttribute('type', 'text/javascript');
 	// get url like：chrome-extension://ihcokhadfjfchaeagdoclpnjdiokfakg/js/inject.js
@@ -23,7 +23,7 @@ function injectCustomJs(jsPath) {
 }
 function injectCustomCSS(cssPath)
 {
-	cssPath = cssPath || 'css/BentleyWebsiteCommon.css';
+	cssPath = cssPath || '/css/BentleyWebsiteCommon.css';
 	var temp = document.createElement('link');
 	temp.setAttribute('type', 'text/css');
 	temp.setAttribute('rel', 'stylesheet');

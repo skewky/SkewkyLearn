@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', fireContentLoadedEvent, false);
 var prodInfos = []
 function fireContentLoadedEvent() {
 
-	injectCustomJs("js/BentleyWebsiteCommon.js")
-    injectCustomJs("js/buildSchedule.js")
-	injectCustomCSS("css/BentleyWebsiteCommon.css")
+	injectCustomJs("/js/BentleyWebsiteCommon.js")
+    injectCustomJs("/js/buildSchedule.js")
+	injectCustomCSS("/css/BentleyWebsiteCommon.css")
 
 	console.log("buildSchedule");
     prodInfos = getAllProducts();
@@ -15,7 +15,7 @@ function fireContentLoadedEvent() {
 }
 function injectCustomCSS(cssPath)
 {
-	cssPath = cssPath || 'css/BentleyWebsiteCommon.css';
+	cssPath = cssPath || '/css/BentleyWebsiteCommon.css';
 	var temp = document.createElement('link');
 	temp.setAttribute('type', 'text/css');
 	temp.setAttribute('rel', 'stylesheet');
@@ -26,7 +26,7 @@ function injectCustomCSS(cssPath)
 }
 //#region Base functions
 function injectCustomJs(jsPath) {
-	jsPath = jsPath || 'js/inject.js';
+	jsPath = jsPath || '/js/inject.js';
 	var temp = document.createElement('script');
 	temp.setAttribute('type', 'text/javascript');
 	// get url like：chrome-extension://ihcokhadfjfchaeagdoclpnjdiokfakg/js/inject.js
