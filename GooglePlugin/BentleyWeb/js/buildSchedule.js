@@ -66,10 +66,8 @@ function isAnyKeyWordsInStr(str, keyword) {
 	keyword = keyword.replaceAll(";", "|");
 	var keyarr = keyword.split("|");
 	for (var i = 0; i < keyarr.length; i++) {
-		var reg = new RegExp(keyarr[i], 'i');
-		var regRest = str.match(reg);
-		var index = -1; //str.indexOf(keyarr[i]);
-		if (regRest || index > -1) {
+		var index = str.toLowerCase().indexOf(keyarr[i].toLowerCase());
+		if (index > -1) {
 			return true;
 		}
 	}
