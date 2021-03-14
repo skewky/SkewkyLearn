@@ -110,6 +110,22 @@ function getFilterValue(filterNameId) {
 	if (myInput) return myInput.value
 	else return ""
 }
+function setFilterValue(filterNameId,newValue) {
+	var myInput = document.getElementById(filterNameId);
+	if (myInput) myInput.value = newValue
+}
+function resetFliter()
+{
+	//it should be read from option settions, on developing....
+	setFilterValue('prodProduct','')
+	setFilterValue('prodVersion','')
+	setFilterValue('prodStamp','cim,orlcn,odcnl')
+	setFilterValue('prodStats','')
+	setFilterValue('prodStartTime','')
+	setFilterValue('prodListRows','15')
+	setFilterValue('prodUseRegex',true)
+	redrawListTable()
+}
 //#endregion
 
 //#region BuildMonitor
@@ -117,7 +133,6 @@ function getFilterValue(filterNameId) {
 function initBuildMonitor() {
 	createHeaderTopDiv()
 	redrawListTable();
-
 }
 
 function createHeaderTopDiv() {
@@ -128,12 +143,14 @@ function createHeaderTopDiv() {
 	divInerString += "</td></tr>"	//blank space TR end
 
 	divInerString += "<tr class='BwcBgColor'><td>Search: "     //filter TR start
-	divInerString += "<input type='text' style='width:38%' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:35%' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodVersion' id='prodVersion' value='' placeholder='Version' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:15%'  name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl' placeholder='Stamp' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodStats' id='prodStats' value='' placeholder='Stats' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodStartTime' id='prodStartTime' value='' placeholder='StartTime' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='number' style='width:40px' id='prodListRows' value='15' oninput='if(value.length>4)value=value.slice(0,2)' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='checkbox' id='prodUseRegex' onclick='redrawListTable()'>Regex"
+	divInerString += "<button type='button' onclick='resetFliter()'>Reset</button>"
 	divInerString += "</td></tr>"	//filter TR end
 
 	divInerString += "<tr><td class='CenteredBlock'>"		//list TR start
@@ -161,7 +178,9 @@ function redrawListTable() {
 	var curTime = new Date()
 	console.log(curTime.toLocaleTimeString() + "  RedrawTable Products="+ searchProdInfos.length+"/"+prodInfos.length)
 	var divInerString = "<table name=cimlistTable class='BwcListtable PRGFormText'>"
-	for (var i = -1; i < searchProdInfos.length; i++) {
+	var maxShowCount = getFilterValue("prodListRows")
+	var count =  searchProdInfos.length>=maxShowCount?maxShowCount:searchProdInfos.length
+	for (var i = -1; i < count; i++) {
 		var prodInfo = {
 			name: "Bentley Product Name " + "(" + searchProdInfos.length + "/" + prodInfos.length + ")",
 			version: "Build Version",
@@ -187,6 +206,21 @@ function redrawListTable() {
 			isTh = false
 		}
 		divInerString += getProdInforStr(prodInfo, index, isTh);
+	}
+	if (searchProdInfos.length>maxShowCount)
+	{
+		var sumProd = {
+			name: "",
+			version: "",
+			stamp: "",
+			time: "",
+			stat: "",
+			log: "",
+			action: "",
+		};
+		sumProd.name = "-------There are [ "+searchProdInfos.length+" ] results, only listed first "+maxShowCount
+		console.log(sumProd.name)
+		divInerString += getProdInforStr(sumProd,"",true);
 	}
 
 	divInerString += "</table>"
@@ -239,10 +273,38 @@ function getFilterProdinfos(prodInfos) {
 			//console.log(msg);
 		}
 	}
+
+	hiddenDivsBySearchedProdList(searchProdinfos)
 	return searchProdinfos;
 }
-
-
+function hiddenDivsBySearchedProdList(searchProdinfos) {
+	var alldivs = getClassObj('ZeroPadding ClearBoth FullWidth')
+	console.log("alldivs.lenght = "+ alldivs.length);
+	for (var i = 0; i < alldivs.length; i++) {
+		var prodInfo = getProductStats(alldivs[i])
+		if(prodNameInsearchProdInfos(prodInfo.name,searchProdinfos))
+		{
+			console.log("visible = "+ prodInfo.name);
+			alldivs[i].parentNode.parentNode.style.display="";//显示
+		}	
+		else
+		{
+			console.log("hidden = "+prodInfo.name);
+			alldivs[i].parentNode.parentNode.style.display="none";//隐藏
+		}	
+	}
+}
+function prodNameInsearchProdInfos(prodName,searchProdInfos)
+{
+	for (var i = 0; i < searchProdInfos.length; i++) {
+		if(prodName == searchProdInfos[i].name)
+		{
+			console.log(prodName)
+			return true;
+		}	
+	}
+	return false;
+}
 function getAllProductStats() {
 	var prodList = []
 	var alldivs = getClassObj('ZeroPadding ClearBoth FullWidth')

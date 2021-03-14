@@ -133,6 +133,7 @@ function createHeaderTopDiv() {
 
 	divInerString += "<tr><td>Search: "     //filter TR start
 	divInerString += "<input type='text' style='width:60%'  name='prodProduct' id='prodProduct' value='openr*for china' placeholder='Product' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='number' style='width:40px' id='prodListRows' value='15' oninput='if(value.length>4)value=value.slice(0,2)' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='checkbox' id='prodUseRegex' onclick='redrawListTable()'>Regex"
 	divInerString += "</td></tr>"	//filter TR end
 
@@ -162,17 +163,15 @@ function redrawListTable() {
     if (searchProdInfos.length == 0) {
         divInerString += "<tr><td><font color='red'>No Products were found! Please change your search keyword.</font></td></tr>"       
     }
-	var maxShowCount = 15
+	var maxShowCount = getFilterValue("prodListRows")
 	var count =  searchProdInfos.length>=maxShowCount?maxShowCount:searchProdInfos.length
 	for (var i = 0; i < count; i++) {
-		var bgcolor = "DBE5F1"
 		var index = "(" + searchProdInfos.length + ")"
 		if (i > -1) {
-			bgcolor = i % 2 == 0 ? "DBE6E1" : "F3F3F3"
 			prodInfo = searchProdInfos[i];
 			index = i + 1
 		}
-		divInerString += getProdInforStr(prodInfo, index, bgcolor);
+		divInerString += getProdInforStr(prodInfo, index);
 	}
 	if (searchProdInfos.length>maxShowCount)
 		divInerString += getProdInforStr({id:"",name:"-------There are [ "+searchProdInfos.length+" ] results, only listed first "+maxShowCount}, "");
