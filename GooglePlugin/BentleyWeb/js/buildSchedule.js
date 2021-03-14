@@ -37,24 +37,29 @@ function injectCustomJs(jsPath) {
 	};
 	document.head.appendChild(temp);
 }
+function isUseRegex()
+{
+	var myInput = document.getElementById("prodUseRegex");
+	if (myInput) return myInput.Checked
+	else return false
+}
 function isStrMatchSearchKeyWords(str, keyword) {
 	if (keyword == "")
 		return true;
-	var keyarr = keyword.split(" ");
-	//console.log(str+" --isStrMatchSearchKeyWords--------------"+ keyword+"------------keyarr.length----  "+ keyarr.length);
+	if (isUseRegex())
+		return str.match(new RegExp(keyword));
+
+	var keyarr = keyword.split("*");
 	for (var i = 0; i < keyarr.length; i++) {
 		var keywordInStr = isAnyKeyWordsInStr(str, keyarr[i]);
-		//console.log(str+" --isStrMatchSearchKeyWords---------keyarr.lenght-----"+ keyarr.length+"--"+ keyarr[i]+"--result-"+ keywordInStr);
 		if (keywordInStr == false) {
 			return false;
 		}
 	}
-	//console.log(str+" --isStrMatchSearchKeyWords----Match----------"+ keyword);	
 	return true;
 }
 function isAnyKeyWordsInStr(str, keyword) {
 	if (keyword == "") {
-		//console.log(str+"==isAnyKeyWordsInStr-------nullkeyworkd=="+keyword);			
 		return true;
 	}
 	keyword = keyword.replaceAll(",", "|");
@@ -64,12 +69,10 @@ function isAnyKeyWordsInStr(str, keyword) {
 		var reg = new RegExp(keyarr[i], 'i');
 		var regRest = str.match(reg);
 		var index = -1; //str.indexOf(keyarr[i]);
-		//console.log(str+"====isAnyKeyWordsInStr=----length=="+keyarr.length+"   keyarr[i]="+keyarr[i]+" regRes="+regRest+" index="+index);
 		if (regRest || index > -1) {
 			return true;
 		}
 	}
-	//console.log(str + "==isAnyKeyWordsInStr-------Not=====" + keyword);
 	return false;
 }
 function getOrCreateMyDiv(id, beforeID) {
@@ -85,7 +88,6 @@ function getOrCreateMyDiv(id, beforeID) {
 	myDiv.appendChild(newContent);
 
 	var currentDiv = document.getElementById(beforeID);
-	//console.log(document.body.childElementCount+"first"+document.body.childNodes.length+"Child=="+document.body.firstChild.innerHTML)
 	if (currentDiv)
 		currentDiv.parentNode.insertBefore(myDiv, currentDiv);
 	else
@@ -96,13 +98,10 @@ function getOrCreateMyDiv(id, beforeID) {
 function getClassObj(className, tag) {
 	tag = tag || document;
 	className = className || '*';
-	//console.log ("ClassName="+className);
-	//console.log ("Tag="+tag);
 	var findarr = [];
 	if (tag.getElementsByClassName) {
 		return tag.getElementsByClassName(className);
 	}
-	//console.log ("getElementsByClassName faild");
 	el = tag.getElementsByTagName(className);
 	var pattern = new RegExp("(^|\\s)" + className + "(\\s|$)");
 	for (var i = 0; i < el.length; i++) {
@@ -135,7 +134,8 @@ function createHeaderTopDiv() {
 	divInerString += "</td></tr>"	//blank space TR end
 
 	divInerString += "<tr><td>Search: "     //filter TR start
-	divInerString += "<input type='text' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:60%'  name='prodProduct' id='prodProduct' value='openr*for china' placeholder='Product' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='checkbox' id='prodUseRegex' onclick='redrawListTable()'>Regex"
 	divInerString += "</td></tr>"	//filter TR end
 
 	divInerString += "<tr><td class='CenteredBlock'>"		//list TR start
@@ -155,15 +155,18 @@ function createHeaderTopDiv() {
 	FilterDiv.innerHTML = divInerString;
 }
 function redrawListTable() {
-	console.log("Call redrawTable=");
 	var listDiv = getOrCreateMyDiv("cimListDiv");
     prodInfos = getAllProducts()
 	searchProdInfos = getFilterProdinfos()
+	var curTime = new Date()
+	console.log(curTime.toLocaleTimeString() + "  RedrawTable Products="+ searchProdInfos.length+"/"+prodInfos.length)
 	var divInerString = "<table class='BwcListtable PRGFormText'>"
     if (searchProdInfos.length == 0) {
         divInerString += "<tr><td><font color='red'>No Products were found! Please change your search keyword.</font></td></tr>"       
     }
-	for (var i = 0; i < searchProdInfos.length; i++) {
+	var maxShowCount = 15
+	var count =  searchProdInfos.length>=maxShowCount?maxShowCount:searchProdInfos.length
+	for (var i = 0; i < count; i++) {
 		var bgcolor = "DBE5F1"
 		var index = "(" + searchProdInfos.length + ")"
 		if (i > -1) {
@@ -173,7 +176,8 @@ function redrawListTable() {
 		}
 		divInerString += getProdInforStr(prodInfo, index, bgcolor);
 	}
-
+	if (searchProdInfos.length>maxShowCount)
+		divInerString += getProdInforStr({id:"",name:"-------There are [ "+searchProdInfos.length+" ] results, only listed first "+maxShowCount}, "");
 	divInerString += "</table>"
 	listDiv.innerHTML = divInerString;
 }
@@ -187,10 +191,6 @@ function getProdInforStr(prodInfo, index) {
 	return str
 }
 
-//<select name="ddlProductList" onclick="javascript:WebForm_DoAsyncCallback('frmMain',document.getElementById('ddlProductList').value,ShowReqParamsDetailHandler,document.getElementById('prgParameter_requiredParametersList'),ShowReqParamsErrorHandler); if(PreviousBuildRequestDialog(document.getElementById('ddlProductList').value))__doPostBack('ddlProductList','')" language="javascript" id="ddlProductList" class="PRGDropDownList">
-
-
-//</select>
 function getAllProducts() {
 	var prodList = []
     var selectObj = document.getElementById('ddlProductList');
@@ -207,18 +207,14 @@ function getAllProducts() {
 		//console.log(msg);
 		prodList.push(prodInfo);
 	}
-    console.log("src-length：" + prodList.length);
-	return prodList;
+    return prodList;
 }
 
 function getFilterProdinfos() {
 	var searchProdinfos = []
-	console.log("AllProducts-length=" + prodInfos.length);
 	var nameFilter = getFilterValue("prodProduct")
 	for (var i = 0; i < prodInfos.length; i++) {
 		var prodInfo = prodInfos[i]
-		//console.log("prodInfo=" + prodInfo);
-		//console.log(" nameFilter="+nameFilter+" versionFilter="+versionFilter+" stampFilter="+stampFilter+" timeFilter="+timeFilter+" StatsFilter="+StatsFilter);
 		if (isStrMatchSearchKeyWords(prodInfo.name, nameFilter)) {
 			searchProdinfos.push(prodInfo);
 			var msg = i + " name=" + prodInfo.name +
@@ -238,7 +234,6 @@ function getFilterProdinfos() {
             allOptions[i].setAttribute("hidden",true)
         }
     }
-	//console.log("searchProdinfos-length：" + searchProdinfos.length);
 	return searchProdinfos;
 }
 /* //在点击网页中确定按钮调用SetReturnValue

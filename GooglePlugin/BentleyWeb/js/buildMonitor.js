@@ -32,40 +32,40 @@ function injectCustomCSS(cssPath)
 	temp.href = chrome.extension.getURL(cssPath);
 	document.head.appendChild(temp);
 }
-
+function isUseRegex()
+{
+	var myInput = document.getElementById("prodUseRegex");
+	if (myInput) return myInput.Checked
+	else return false
+}
 function isStrMatchSearchKeyWords(str, keyword) {
 	if (keyword == "")
 		return true;
-	var keyarr = keyword.split(" ");
-	//console.log(str+" --isStrMatchSearchKeyWords--------------"+ keyword+"------------keyarr.length----  "+ keyarr.length);
+	if (isUseRegex())
+		return str.match(new RegExp(keyword));
+
+	var keyarr = keyword.split("*");
 	for (var i = 0; i < keyarr.length; i++) {
 		var keywordInStr = isAnyKeyWordsInStr(str, keyarr[i]);
-		//console.log(str+" --isStrMatchSearchKeyWords---------keyarr.lenght-----"+ keyarr.length+"--"+ keyarr[i]+"--result-"+ keywordInStr);
 		if (keywordInStr == false) {
 			return false;
 		}
 	}
-	//console.log(str+" --isStrMatchSearchKeyWords----Match----------"+ keyword);	
 	return true;
 }
 function isAnyKeyWordsInStr(str, keyword) {
 	if (keyword == "") {
-		//console.log(str+"==isAnyKeyWordsInStr-------nullkeyworkd=="+keyword);			
 		return true;
 	}
 	keyword = keyword.replaceAll(",", "|");
 	keyword = keyword.replaceAll(";", "|");
 	var keyarr = keyword.split("|");
 	for (var i = 0; i < keyarr.length; i++) {
-		var reg = new RegExp(keyarr[i], 'i');
-		var regRest = str.match(reg);
-		var index = str.indexOf(keyarr[i]);
-		//console.log(str+"====isAnyKeyWordsInStr=----length=="+keyarr.length+"   keyarr[i]="+keyarr[i]+" regRes="+regRest+" index="+index);
-		if (regRest || index > -1) {
+		var index = str.toLowerCase.indexOf(keyarr[i].toLowerCase);
+		if (index > -1) {
 			return true;
 		}
 	}
-	//console.log(str + "==isAnyKeyWordsInStr-------Not=====" + keyword);
 	return false;
 }
 function getOrCreateMyDiv(id, beforeID) {
@@ -81,7 +81,6 @@ function getOrCreateMyDiv(id, beforeID) {
 	myDiv.appendChild(newContent);
 
 	var currentDiv = document.getElementById("frmMain");
-	//console.log(document.body.childElementCount+"first"+document.body.childNodes.length+"Child=="+document.body.firstChild.innerHTML)
 	if (currentDiv)
 		document.body.insertBefore(myDiv, currentDiv);
 	else
@@ -92,13 +91,10 @@ function getOrCreateMyDiv(id, beforeID) {
 function getClassObj(className, tag) {
 	tag = tag || document;
 	className = className || '*';
-	//console.log ("ClassName="+className);
-	//console.log ("Tag="+tag);
 	var findarr = [];
 	if (tag.getElementsByClassName) {
 		return tag.getElementsByClassName(className);
 	}
-	//console.log ("getElementsByClassName faild");
 	el = tag.getElementsByTagName(className);
 	var pattern = new RegExp("(^|\\s)" + className + "(\\s|$)");
 	for (var i = 0; i < el.length; i++) {
@@ -132,11 +128,12 @@ function createHeaderTopDiv() {
 	divInerString += "</td></tr>"	//blank space TR end
 
 	divInerString += "<tr class='BwcBgColor'><td>Search: "     //filter TR start
-	divInerString += "<input type='text' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodVersion' id='prodVersion' value='' placeholder='Version' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl' placeholder='Stamp' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodStats' id='prodStats' value='' placeholder='Stats' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' name='prodStartTime' id='prodStartTime' value='' placeholder='StartTime' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:38%' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:10%'  name='prodVersion' id='prodVersion' value='' placeholder='Version' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:15%'  name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl' placeholder='Stamp' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:10%'  name='prodStats' id='prodStats' value='' placeholder='Stats' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:10%'  name='prodStartTime' id='prodStartTime' value='' placeholder='StartTime' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='checkbox' id='prodUseRegex' onclick='redrawListTable()'>Regex"
 	divInerString += "</td></tr>"	//filter TR end
 
 	divInerString += "<tr><td class='CenteredBlock'>"		//list TR start
@@ -158,10 +155,11 @@ function createHeaderTopDiv() {
 }
 
 function redrawListTable() {
-	console.log("Call redrawTable=");
 	var listDiv = getOrCreateMyDiv("cimListDiv");
 	var prodInfos = getAllProductStats();
 	searchProdInfos = getFilterProdinfos(prodInfos)
+	var curTime = new Date()
+	console.log(curTime.toLocaleTimeString() + "  RedrawTable Products="+ searchProdInfos.length+"/"+prodInfos.length)
 	var divInerString = "<table name=cimlistTable class='BwcListtable PRGFormText'>"
 	for (var i = -1; i < searchProdInfos.length; i++) {
 		var prodInfo = {
@@ -198,9 +196,7 @@ function redrawListTable() {
 
 
 function getProdInforStr(prodInfo, index, isTh) {
-	console.log(isTh)
 	isTh = isTh||false
-	console.log(isTh)
 	var sTag = isTh?"<th class='BlackControlLabelZeroPad BlueText PRGFormText'>":"<td>";
 	var namesTag = isTh?sTag:"<td class='BlackControlLabelZeroPad BlueText PRGFormText'>" 
 	var eTag = isTh?"</th>":"</td>";
@@ -220,16 +216,13 @@ function getProdInforStr(prodInfo, index, isTh) {
 
 function getFilterProdinfos(prodInfos) {
 	var searchProdinfos = []
-	console.log("AllProducts-length=" + prodInfos.length);
 	for (var i = 0; i < prodInfos.length; i++) {
 		var prodInfo = prodInfos[i]
-		//console.log("prodInfo=" + prodInfo);
 		var nameFilter = getFilterValue("prodProduct")
 		var versionFilter = getFilterValue("prodVersion")
 		var stampFilter = getFilterValue("prodStamp")
 		var timeFilter = getFilterValue("prodStartTime")
 		var StatsFilter = getFilterValue("prodStats")
-		//console.log(" nameFilter="+nameFilter+" versionFilter="+versionFilter+" stampFilter="+stampFilter+" timeFilter="+timeFilter+" StatsFilter="+StatsFilter);
 		if (isStrMatchSearchKeyWords(prodInfo.name, nameFilter) &&
 			isStrMatchSearchKeyWords(prodInfo.version, versionFilter) &&
 			isStrMatchSearchKeyWords(prodInfo.stamp, stampFilter) &&
@@ -246,7 +239,6 @@ function getFilterProdinfos(prodInfos) {
 			//console.log(msg);
 		}
 	}
-	//console.log("searchProdinfos-length：" + searchProdinfos.length);
 	return searchProdinfos;
 }
 
@@ -269,7 +261,7 @@ function getAllProductStats() {
 		forShow = forShow + alldivs[i].innerHTML;
 		prodList.push(prodInfo);
 	}
-	console.log("src-length：" + prodList.length);
+	//console.log("src-length：" + prodList.length);
 
 	return prodList;
 }

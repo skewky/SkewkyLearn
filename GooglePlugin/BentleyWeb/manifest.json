@@ -31,7 +31,7 @@
   "options_page": "/html/options.html",
   "options_ui": {
     "page": "/html/options.html",
-    // 添加一些默认的样式，推荐使用
+    //added default style
     "chrome_style": true
   },
   "background": {
@@ -51,8 +51,8 @@
       "48": "/images/skewkyBentleyWeb.png",
       "128": "/images/skewkyBentleyWeb.png"
     },
-		// 图标悬停时的标题，可选
-		"default_title": "这是一个示例Chrome插件",
+		// display when mouse over it
+		"default_title": "This is a Test Chorme Extension",
 		"default_popup": "/html/menu.html"
 	},*/
   "page_action": {
@@ -91,6 +91,15 @@
     {
       "matches": [
         "http://prgsrv.bentley.com/Build.Schedule.aspx"
+      ],
+      "js": [
+        "/js/buildSchedule.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://prgsrv.bentley.com/Build.Schedule.Completed.aspx"
       ],
       "js": [
         "/js/buildSchedule.js"
