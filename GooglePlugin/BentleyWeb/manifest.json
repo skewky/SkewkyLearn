@@ -90,16 +90,9 @@
     },
     {
       "matches": [
-        "http://prgsrv.bentley.com/Build.Schedule.aspx"
-      ],
-      "js": [
-        "/js/buildSchedule.js"
-      ],
-      "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "http://prgsrv.bentley.com/Build.Schedule.Completed.aspx"
+        "http://prgsrv.bentley.com/Build.Schedule.aspx",
+        "http://prgsrv.bentley.com/Build.Schedule.Completed.aspx",
+        "http://prgsrv.bentley.com/Build.Schedule.Update.aspx*"
       ],
       "js": [
         "/js/buildSchedule.js"

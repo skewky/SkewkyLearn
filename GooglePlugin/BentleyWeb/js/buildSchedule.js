@@ -119,6 +119,7 @@ function getFilterValue(filterNameId) {
 
 
 function initBuildSchedule() {
+	console.log("InitBuildSchedule")
 	createHeaderTopDiv()
 	redrawListTable();
 
