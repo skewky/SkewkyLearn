@@ -148,7 +148,7 @@ function createHeaderTopDiv() {
 	divInerString += "<input type='text' style='width:15%'  name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl' placeholder='Stamp' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodStats' id='prodStats' value='' placeholder='Stats' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodStartTime' id='prodStartTime' value='' placeholder='StartTime' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='number' style='width:40px' id='prodListRows' value='15' oninput='if(value.length>4)value=value.slice(0,2)' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='number' style='width:50px' id='prodListRows' value='15' oninput='if(value.length>3)value=value.slice(0,3)' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='checkbox' id='prodUseRegex' onclick='redrawListTable()'>Regex"
 	divInerString += "<button type='button' onclick='resetFliter()'>Reset</button>"
 	divInerString += "</td></tr>"	//filter TR end
@@ -284,12 +284,12 @@ function hiddenDivsBySearchedProdList(searchProdinfos) {
 		var prodInfo = getProductStats(alldivs[i])
 		if(prodNameInsearchProdInfos(prodInfo.name,searchProdinfos))
 		{
-			console.log("visible = "+ prodInfo.name);
+			//console.log("visible = "+ prodInfo.name);
 			alldivs[i].parentNode.parentNode.style.display="";//显示
 		}	
 		else
 		{
-			console.log("hidden = "+prodInfo.name);
+			//console.log("hidden = "+prodInfo.name);
 			alldivs[i].parentNode.parentNode.style.display="none";//隐藏
 		}	
 	}
@@ -299,7 +299,7 @@ function prodNameInsearchProdInfos(prodName,searchProdInfos)
 	for (var i = 0; i < searchProdInfos.length; i++) {
 		if(prodName == searchProdInfos[i].name)
 		{
-			console.log(prodName)
+			//console.log(prodName)
 			return true;
 		}	
 	}

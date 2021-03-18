@@ -5,10 +5,10 @@ var prodInfos = []
 function fireContentLoadedEvent() {
 
 	//injectCustomJs("/js/BentleyWebsiteCommon.js")
-    injectCustomJs("/js/buildSchedule.js")
+    injectCustomJs("/js/Productname.js")
 	injectCustomCSS("/css/BentleyWebsiteCommon.css")
 
-	console.log("buildSchedule");
+	console.log("Productname");
     prodInfos = getAllProducts();
 	
     initBuildSchedule()
@@ -126,7 +126,7 @@ function initBuildSchedule() {
 }
 
 function createHeaderTopDiv() {
-	var FilterDiv = getOrCreateMyDiv("cimfilterDiv","ddlProductList");
+	var FilterDiv = getOrCreateMyDiv("cimfilterDiv","dgrProducts");
 	var divInerString = "<table class='PRGFormText BwcBgColor'>"	//main table start
 	divInerString += "<tr><td>"		//blank space TR start
 	divInerString += "<div><p /> </div>  "
@@ -156,8 +156,9 @@ function createHeaderTopDiv() {
 }
 function redrawListTable() {
 	var listDiv = getOrCreateMyDiv("cimListDiv");
-    prodInfos = getAllProducts()
-	searchProdInfos = getFilterProdinfos()
+    var res = getAllProducts()
+    prodInfos =res.allRes
+	searchProdInfos = res.filterRes
 	var curTime = new Date()
 	console.log(curTime.toLocaleTimeString() + "  RedrawTable Products="+ searchProdInfos.length+"/"+prodInfos.length)
 	var divInerString = "<table class='BwcListtable PRGFormText'>"
@@ -175,7 +176,7 @@ function redrawListTable() {
 		divInerString += getProdInforStr(prodInfo, index);
 	}
 	if (searchProdInfos.length>maxShowCount)
-		divInerString += getProdInforStr({id:"",name:"-------There are [ "+searchProdInfos.length+" ] results, only listed first "+maxShowCount}, "");
+		divInerString += getProdInforStr({id:"",name:"-------There are [ "+searchProdInfos.length+" ] results, only listed first "+maxShowCount,abbr:"",dirName:""}, "");
 	divInerString += "</table>"
 	listDiv.innerHTML = divInerString;
 }
@@ -184,123 +185,41 @@ function getProdInforStr(prodInfo, index) {
 	var str = "<tr>"
 	str += "<Td >" + index + "</td>";
 	str += "<Td class='BlackControlLabelZeroPad BlueText PRGFormText'>" + prodInfo.name + "</td>";
-	str += "<Td>" + prodInfo.id + "</td>";
+	str += "<Td>" + prodInfo.abbr + "</td>";
+	str += "<Td>" + prodInfo.dirName + "</td>";
 	str += "</tr>";
 	return str
 }
 
 function getAllProducts() {
 	var prodList = []
-    var selectObj = document.getElementById('ddlProductList');
-	var allOptions = selectObj.childNodes;
-	for (var i = 0; i < allOptions.length; i++) {
-		if (!allOptions[i].value) continue;
+    var searchProdinfos = []
+    var allTrs = document.getElementById("dgrProducts").getElementsByTagName("tr");
+    var nameFilter = getFilterValue("prodProduct")
+	var maxShowCount = getFilterValue("prodListRows")
+	for (var i = 1; i < allTrs.length; i++) {
+        var prodInfo = {id:'1012',
+                        name:'bentley',
+                        abbr:'mstn',
+                        dirName:'Mstnplatform'};
 
-        var prodInfo = {id:'1012',name:'bentley'}
-        prodInfo.id = allOptions[i].value
-        prodInfo.name = allOptions[i].innerHTML
+        prodInfo.id = allTrs[i].childNodes[1].innerHTML
+        prodInfo.name = allTrs[i].childNodes[2].innerHTML
+        prodInfo.abbr = allTrs[i].childNodes[4].innerHTML
+        prodInfo.dirName = allTrs[i].childNodes[5].innerHTML
+                                
+        allTrs[i].setAttribute("hidden",true)        
+        if (isStrMatchSearchKeyWords(prodInfo.name, nameFilter)) {
+            searchProdinfos.push(prodInfo);
+            if (searchProdinfos.length<maxShowCount)
+                allTrs[i].removeAttribute("hidden");
+        }
+
 		var msg = "productName=" + prodInfo.name +
 			"\t buildid=" + prodInfo.id
 		//" Action="+prodInfo.action
 		//console.log(msg);
 		prodList.push(prodInfo);
 	}
-    return prodList;
+    return {allRes:prodList, filterRes:searchProdinfos};
 }
-
-function getFilterProdinfos() {
-	var searchProdinfos = []
-	var nameFilter = getFilterValue("prodProduct")
-	for (var i = 0; i < prodInfos.length; i++) {
-		var prodInfo = prodInfos[i]
-		if (isStrMatchSearchKeyWords(prodInfo.name, nameFilter)) {
-			searchProdinfos.push(prodInfo);
-			var msg = i + " name=" + prodInfo.name +
-				"\t id=" + prodInfo.id
-			//" Action="+prodInfo.action
-			//console.log(msg);
-		}
-	}
-    var selectObj = document.getElementById('ddlProductList');
-	var allOptions = selectObj.childNodes;
-    for (var i = 0; i < allOptions.length; i++) {
-		if (!allOptions[i].value) continue;
-        if (isStrMatchSearchKeyWords(allOptions[i].innerHTML, nameFilter)) {
-            allOptions[i].removeAttribute("hidden");
-        }
-        else{
-            allOptions[i].setAttribute("hidden",true)
-        }
-    }
-	return searchProdinfos;
-}
-/* //在点击网页中确定按钮调用SetReturnValue
-function SetReturnValue(id)
-{
-    var rlt = "我想返回的数值";
-    window.returnValue = rlt;//ie之类浏览器
-    if(opener != null && opener != 'undefined')
-    {
-        window.opener.returnValue = rlt; //chrome有些版本有问题, 所以在子窗口同时修改了父窗口的ReturnValue(能执行showModalDialog的chrome)
-        if(window.opener.showModalDialogCallback)
-            window.opener.showModalDialogCallback(rlt);
-    }
-    window.close();
-}
-
-myShowModalDialog("http://test.com/test.html", 500, 4000, function(resv){
-    alert(resv);//原窗口关闭处理流程
-});
-function myShowModalDialog(url, width, height, callback)
-{
-    if(window.showModalDialog)
-    {
-        if(callback)
-        {
-            var rlt = showModalDialog(url, '', 'resizable:no;scroll:no;status:no;center:yes;help:no;dialogWidth:' + width + ' px;dialogHeight:' + height + ' px');
-            if(rlt)
-                return callback(rlt);
-            else
-            {
-                callback(window.returnValue);
-            }
-        }
-        else
-            showModalDialog(url, '', 'resizable:no;scroll:no;status:no;center:yes;help:no;dialogWidth:' + width + ' px;dialogHeight:' + height + ' px');
-    }
-    else
-    {
-        if(callback)
-            window.showModalDialogCallback = callback;
-        var top = (window.screen.availHeight-30-height)/2; //获得窗口的垂直位置;
-        var left = (window.screen.availWidth-10-width)/2; //获得窗口的水平位置;
-        var winOption = "top="+top+",left="+left+",height="+height+",width="+width+",resizable=no,scrollbars=no,status=no,toolbar=no,location=no,directories=no,menubar=no,help=no";
-        window.open(url,window, winOption);
-    }
-}
-function MyPreviousBuildRequestDialog(oValue)
-{
-	var retval="false";
-	retval = window.showModalDialog('http://prgsrv.bentley.com/dialogHost.asp?LoadPage=/WebDialogs/PreviousBuildRequest.aspx?ProductID=' + oValue + '',window,"dialogHeight:411px; dialogWidth:687px; edge:Sunken; center:Yes; scroll:Yes; help:No; resizable:Yes; status:No;");
-	if (retval != 'true')
-	{
-		return false;
-	}
-	 else 
-	{
-		return true;
-	}
-}
-function PreviousBuildRequestDialog(oValue)
-{
-	var retval="false";
-	retval = window.showModalDialog('http://prgsrv.bentley.com/dialogHost.asp?LoadPage=/WebDialogs/PreviousBuildRequest.aspx?ProductID=' + oValue + '',window,"dialogHeight:411px; dialogWidth:687px; edge:Sunken; center:Yes; scroll:Yes; help:No; resizable:Yes; status:No;");
-	if (retval != 'true')
-	{
-		return false;
-	}
-	 else 
-	{
-		return true;
-	}
-} */

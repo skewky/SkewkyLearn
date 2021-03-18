@@ -98,6 +98,15 @@
         "/js/buildSchedule.js"
       ],
       "run_at": "document_start"
+    } ,
+    {
+      "matches": [
+        "http://prgsrv.bentley.com/Product.Naming.Standards.aspx"
+      ],
+      "js": [
+        "/js/ProductName.js"
+      ],
+      "run_at": "document_start"
     }
   ]
 }
