@@ -119,7 +119,7 @@ function resetFliter()
 	//it should be read from option settions, on developing....
 	setFilterValue('prodProduct','')
 	setFilterValue('prodVersion','')
-	setFilterValue('prodStamp','cim,orlcn,odcnl')
+	setFilterValue('prodStamp','cim,orlcn,odcnl,orucl,oducl')
 	setFilterValue('prodStats','')
 	setFilterValue('prodStartTime','')
 	setFilterValue('prodListRows','15')
@@ -145,7 +145,7 @@ function createHeaderTopDiv() {
 	divInerString += "<tr class='BwcBgColor'><td>Search: "     //filter TR start
 	divInerString += "<input type='text' style='width:35%' name='prodProduct' id='prodProduct' value='' placeholder='Product' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodVersion' id='prodVersion' value='' placeholder='Version' onkeyup='redrawListTable()'>"
-	divInerString += "<input type='text' style='width:15%'  name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl' placeholder='Stamp' onkeyup='redrawListTable()'>"
+	divInerString += "<input type='text' style='width:15%'  name='prodStamp' id='prodStamp' value='cim,orlcn,odcnl,orucl,oducl' placeholder='Stamp' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodStats' id='prodStats' value='' placeholder='Stats' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='text' style='width:10%'  name='prodStartTime' id='prodStartTime' value='' placeholder='StartTime' onkeyup='redrawListTable()'>"
 	divInerString += "<input type='number' style='width:50px' id='prodListRows' value='15' oninput='if(value.length>3)value=value.slice(0,3)' onkeyup='redrawListTable()'>"
