@@ -107,6 +107,24 @@
         "/js/ProductName.js"
       ],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://productaudit.bentley.com/"
+      ],
+      "js": [
+        "/js/ProductAudit.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "http://ppjenkinmstr:8080/job/PostUpdateInfo/build?delay=0sec"
+      ],
+      "js": [
+        "/js/ppjenkinmstr.js"
+      ],
+      "run_at": "document_start"
     }
   ]
 }
